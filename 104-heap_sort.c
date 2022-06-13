@@ -1,79 +1,51 @@
 #include "sort.h"
 
 /**
- * sift_down - fixes a heap
- * @array: the heap to fix
- * @root: the root of the heap
- * @end: the last index of the heap
- * @size: size of the array
- *
- * Return: void
- */
-void sift_down(int *array, size_t root, size_t end, size_t size)
-{
-	size_t left_child, right_child, swap;
-	int temp;
+* stupify - recurrssive heapfiy function
+* @array: Array to sort
+* @heap: size of heap data
+* @i: index
+* @size: size of array
+*/
 
-	while ((left_child = (2 * root) + 1) <= end)
+void stupify(int *array, int heap, int i, int size)
+{
+	int lar = i, left = 2 * i + 1, right = 2 * i + 2, t;
+
+	if (left < heap && array[left] > array[lar])
+		lar = left;
+	if (right < heap && array[right] > array[lar])
+		lar = right;
+	if (lar != i)
 	{
-		swap = root;
-		right_child = left_child + 1;
-		if (array[swap] < array[left_child])
-			swap = left_child;
-		if (right_child <= end && array[swap] < array[right_child])
-			swap = right_child;
-		if (swap == root)
-			return;
-		temp = array[root];
-		array[root] = array[swap];
-		array[swap] = temp;
+		t = array[i], array[i] = array[lar], array[lar] = t;
 		print_array(array, size);
-		root = swap;
+		stupify(array, heap, lar, size);
 	}
 }
 
 /**
- * make_heap - makes a heap from an unsorted array
- * @array: array to turn into a heap
- * @size: size of the array
- *
- * Return: void
- */
-void make_heap(int *array, size_t size)
-{
-	size_t parent;
+* heap_sort - Sorts array with heap sort algo
+* @array: array to sort
+* @size: Size of array to sort
+*/
 
-	for (parent = ((size - 1) - 1) / 2; 1; parent--)
-	{
-		sift_down(array, parent, size - 1, size);
-		if (parent == 0)
-			break;
-	}
-}
-
-/**
- * heap_sort - sorts an array of ints in ascending order w/ the Heap sort algo
- * @array: array to sort
- * @size: size of the array
- *
- * Return: void
- */
 void heap_sort(int *array, size_t size)
 {
-	size_t end;
-	int temp;
+	int i = size / 2 - 1, temp;
 
 	if (array == NULL || size < 2)
 		return;
-	make_heap(array, size);
-	end = size - 1;
-	while (end > 0)
+	for (; i >= 0; i--)
+		stupify(array, size, i, size);
+	for (i = size - 1; i >= 0; i--)
 	{
-		temp = array[end];
-		array[end] = array[0];
-		array[0] = temp;
-		print_array(array, size);
-		end--;
-		sift_down(array, 0, end, size);
+		temp = array[0];
+		array[0] = array[i];
+		array[i] = temp;
+		if (i > 0)
+			print_array(array, size);
+		stupify(array, i, 0, size);
 	}
+
 }
