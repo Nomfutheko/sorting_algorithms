@@ -1,74 +1,79 @@
 #include "sort.h"
 
 /**
- * _swap - swaped 2 values.
- * @array: the array for swap him values.
- * @i: First index
- * @j: Second index
- * @r_size: The size constant for print
- * Return: Nothing
+ * sift_down - fixes a heap
+ * @array: the heap to fix
+ * @root: the root of the heap
+ * @end: the last index of the heap
+ * @size: size of the array
+ *
+ * Return: void
  */
-void _swap(int *array, int i, int j, const int r_size)
+void sift_down(int *array, size_t root, size_t end, size_t size)
 {
-	int tmp;
-	(void) r_size;
+	size_t left_child, right_child, swap;
+	int temp;
 
-	if (i != j)
+	while ((left_child = (2 * root) + 1) <= end)
 	{
-		tmp = array[i];
-		array[i] = array[j];
-		array[j] = tmp;
-		print_array(array, (size_t)r_size);
+		swap = root;
+		right_child = left_child + 1;
+		if (array[swap] < array[left_child])
+			swap = left_child;
+		if (right_child <= end && array[swap] < array[right_child])
+			swap = right_child;
+		if (swap == root)
+			return;
+		temp = array[root];
+		array[root] = array[swap];
+		array[swap] = temp;
+		print_array(array, size);
+		root = swap;
 	}
 }
 
 /**
- * _largest - Find the largest number btween the layers
- * @array: The array for sort
- * @size: The menor element
- * @i: The largest.
- * @r_size: The size for print in swap
- * Return: Nothing.
+ * make_heap - makes a heap from an unsorted array
+ * @array: array to turn into a heap
+ * @size: size of the array
+ *
+ * Return: void
  */
-void _largest(int *array, size_t size, int i, const int r_size)
+void make_heap(int *array, size_t size)
 {
-	int largest = i;
-	int lft = (2 * i) + 1;
-	int rgt = (2 * i) + 2;
+	size_t parent;
 
-	if (lft < (int)size && array[lft] > array[largest])
-		largest = lft;
-
-	if (rgt < (int)size && array[rgt] > array[largest])
-		largest = rgt;
-
-	if (largest != i)
+	for (parent = ((size - 1) - 1) / 2; 1; parent--)
 	{
-		_swap(array, i, largest, r_size);
-		_largest(array, size, largest, r_size);
+		sift_down(array, parent, size - 1, size);
+		if (parent == 0)
+			break;
 	}
 }
 
 /**
- * heap_sort - Call largest while exist layers
- * @array: The array that generate the layers
- * @size: Size of the array
- * Return: Nothing
+ * heap_sort - sorts an array of ints in ascending order w/ the Heap sort algo
+ * @array: array to sort
+ * @size: size of the array
+ *
+ * Return: void
  */
 void heap_sort(int *array, size_t size)
 {
-	const int r_size = (const int)size;
-	int i;
+	size_t end;
+	int temp;
 
-	if (size < 2 || !array)
+	if (array == NULL || size < 2)
 		return;
-
-	for (i = size / 2 - 1; i >= 0; i--)
-		_largest(array, size, i, r_size);
-
-	for (i = size - 1; i >= 0; i--)
+	make_heap(array, size);
+	end = size - 1;
+	while (end > 0)
 	{
-		_swap(array, 0, i, r_size);
-		_largest(array, i, 0, r_size);
+		temp = array[end];
+		array[end] = array[0];
+		array[0] = temp;
+		print_array(array, size);
+		end--;
+		sift_down(array, 0, end, size);
 	}
 }
